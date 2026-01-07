@@ -8,7 +8,7 @@ def main():
     print("Creating vector store...")
     vs_id = create_vector_store()
 
-    print("Uploading to vector store...")
+    print("Uploading delta to vector store...")
     upload_files_to_vector_store(vs_id)
 
     print("Done.")
