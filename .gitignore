@@ -1,3 +1,8 @@
+
+# Python virtual environment
+venv/
+.venv/
+
+# Other common files
 .env
 .env.sample
-venv/
