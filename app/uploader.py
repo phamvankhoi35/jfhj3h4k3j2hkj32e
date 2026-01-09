@@ -10,7 +10,10 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 VECTOR_STORE_NAME = "optibot-knowledge"
 ARTICLES_DIR = "articles"
-HASH_FILE = "data/file_hashes.json"
+
+# Chúng ta mount volume host -> container
+DATA_DIR = "/data"  # volume từ host
+HASH_FILE = os.path.join(DATA_DIR, "file_hashes.json")
 
 def load_old_hashes():
     if not os.path.exists(HASH_FILE):
@@ -22,11 +25,12 @@ def load_old_hashes():
             if not content:
                 return {}
             return json.loads(content)
-    except Exception as e:
+    except Exception:
         print("Warning: Could not read file_hashes.json, starting fresh.")
         return {}
 
 def save_hashes(hashes):
+    os.makedirs(DATA_DIR, exist_ok=True)  # tạo folder nếu chưa có
     with open(HASH_FILE, "w") as f:
         json.dump(hashes, f, indent=2)
 
@@ -52,6 +56,7 @@ def upload_files_to_vector_store(vector_store_id):
         h = file_hash(path)
         new_hashes[fname] = h
 
+        # Nếu file mới hoặc hash thay đổi → upload
         if fname not in old_hashes:
             files_to_upload.append(open(path, "rb"))
             added += 1
